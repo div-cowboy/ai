@@ -498,6 +498,40 @@ describe('tool helper', () => {
       expectTypeOf(aTool.inputSchema).toEqualTypeOf<FlexibleSchema<T>>();
     });
 
+    it('should default input type to an empty object when inputSchema is omitted', () => {
+      const aTool = tool({
+        description: 'Get the current time',
+        execute: async input => {
+          expectTypeOf(input).toEqualTypeOf<Record<string, never>>();
+          return '12:00' as const;
+        },
+      });
+
+      expectTypeOf(aTool).toEqualTypeOf<
+        ExecutableTool<Tool<Record<string, never>, '12:00', Context>>
+      >();
+      expectTypeOf(aTool.execute).toEqualTypeOf<
+        ToolExecuteFunction<Record<string, never>, '12:00', Context>
+      >();
+      expectTypeOf(aTool.inputSchema).toEqualTypeOf<
+        FlexibleSchema<Record<string, never>>
+      >();
+    });
+
+    it('should default input type to an empty object when inputSchema and execute are omitted', () => {
+      const aTool = tool({
+        description: 'Ping',
+      });
+
+      expectTypeOf(aTool).toEqualTypeOf<
+        Tool<Record<string, never>, never, Context>
+      >();
+      expectTypeOf(aTool.execute).toEqualTypeOf<undefined>();
+      expectTypeOf(aTool.inputSchema).toEqualTypeOf<
+        FlexibleSchema<Record<string, never>>
+      >();
+    });
+
     it('should infer input type when inputExamples are present with an optional/default Zod schema', () => {
       const inputSchema = z.object({
         location: z.string(),

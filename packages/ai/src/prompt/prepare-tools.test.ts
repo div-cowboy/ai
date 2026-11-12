@@ -40,6 +40,32 @@ describe('prepareTools', () => {
     expect(result).toBeUndefined();
   });
 
+  it('defaults omitted inputSchema to an empty object schema', async () => {
+    const result = await prepareTools({
+      tools: {
+        ping: tool({
+          description: 'Ping',
+          execute: async () => 'pong',
+        }),
+      },
+    });
+
+    expect(result).toMatchInlineSnapshot(`
+      [
+        {
+          "description": "Ping",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {},
+            "type": "object",
+          },
+          "name": "ping",
+          "type": "function",
+        },
+      ]
+    `);
+  });
+
   it('returns all tools', async () => {
     const result = await prepareTools({ tools: mockTools });
 

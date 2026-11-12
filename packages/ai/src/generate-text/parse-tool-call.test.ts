@@ -199,6 +199,38 @@ describe('parseToolCall', () => {
     `);
   });
 
+  it('should successfully process empty tool calls when inputSchema is omitted', async () => {
+    const result = await parseToolCall({
+      toolCall: {
+        type: 'tool-call',
+        toolName: 'testTool',
+        toolCallId: '123',
+        input: '',
+      },
+      tools: {
+        testTool: tool({
+          description: 'Ping',
+          execute: async () => 'pong',
+        }),
+      } as const,
+      repairToolCall: undefined,
+      messages: [],
+      instructions: undefined,
+    });
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "input": {},
+        "providerExecuted": undefined,
+        "providerMetadata": undefined,
+        "title": undefined,
+        "toolCallId": "123",
+        "toolName": "testTool",
+        "type": "tool-call",
+      }
+    `);
+  });
+
   it('should successfully process empty tool calls for tools that have no inputSchema', async () => {
     const result = await parseToolCall({
       toolCall: {
